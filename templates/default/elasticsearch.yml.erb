@@ -144,12 +144,12 @@ cluster.name: elasticsearch
 # Path to directory containing configuration (this file and logging.yml):
 #
 # path.conf: /path/to/conf
-path.conf: <%= node[:elasticsearch][:path][:conf] %>
+path.conf: <%= node['elasticsearch']['path']['conf'] %>
 
 # Path to directory where to store index data allocated for this node.
 #
 # path.data: /path/to/data
-path.data: <%= node[:elasticsearch][:path][:data] %>
+path.data: <%= node['elasticsearch']['path']['data'] %>
 
 # Can optionally include more than one location, causing data to be striped across
 # the locations (a la RAID 0) on a file level, favouring locations with most free
@@ -164,12 +164,12 @@ path.data: <%= node[:elasticsearch][:path][:data] %>
 # Path to log files:
 #
 # path.logs: /path/to/logs
-path.logs: <%= node[:elasticsearch][:path][:logs] %>
+path.logs: <%= node['elasticsearch']['path']['logs'] %>
 
 # Path to where plugins are installed:
 #
 # path.plugins: /path/to/plugins
-path.plugins: <%= node[:elasticsearch][:path][:plugins] %>
+path.plugins: <%= node['elasticsearch']['path']['plugins'] %>
 
 
 #################################### Plugin ###################################
@@ -372,10 +372,10 @@ discovery.zen.ping.unicast.hosts: ["<%= @hosts.join('","') %>"]
 #monitor.jvm.gc.ConcurrentMarkSweep.info: 5s
 #monitor.jvm.gc.ConcurrentMarkSweep.debug: 2s
 
-<% if !!node[:elasticsearch][:basic_auth] -%>
+<% if !!node['elasticsearch']['basic_auth'] -%>
 ################################## Basic Auth ################################
 
-http.basic.enabled: <%= (!!node[:elasticsearch][:basic_auth]).to_s %>
-http.basic.user: "<%= node[:elasticsearch][:basic_auth][:user] %>"
-http.basic.password: "<%= node[:elasticsearch][:basic_auth][:password] %>"
+http.basic.enabled: <%= (!!node['elasticsearch']['basic_auth']).to_s %>
+http.basic.user: "<%= node['elasticsearch']['basic_auth']['user'] %>"
+http.basic.password: "<%= node['elasticsearch']['basic_auth']['password'] %>"
 <% end -%>
