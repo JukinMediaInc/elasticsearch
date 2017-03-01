@@ -35,7 +35,7 @@ execute "reload-monit" do
 end
 
 # Configration
-if (node['opsworks']['layers']['elasticsearch'].nil?)
+if (node['opsworks']['layers'].nil?)
    file "/tmp/wtf.opsworks" do
     content <<-EOH
       #{node['opsworks']['layers']}
@@ -51,7 +51,9 @@ else
     owner node['elasticsearch']['user']
     group node['elasticsearch']['user']
     mode '0755'
-    variables :hosts => hosts
+    variables(
+        hosts: hosts
+    )
   end
 end
 
@@ -61,5 +63,5 @@ template "elasticsearch.monitrc" do
   source "elasticsearch.monitrc.erb"
   owner 'root'
   mode '0755'
-  notifies :run, resources(:execute => "reload-monit")
+  notifies :run, resources(execute: "reload-monit")
 end
