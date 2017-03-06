@@ -59,7 +59,7 @@ template "elasticsearch.yml" do
   group node['elasticsearch']['user']
   mode '0755'
   variables(
-      hosts: node['instance']['private_ip']
+      hosts: node['opsworks']['instance']['private_ip']
   )
 end
 
