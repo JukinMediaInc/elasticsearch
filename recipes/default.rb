@@ -35,26 +35,32 @@ execute "reload-monit" do
 end
 
 # Configration
-if (node['opsworks']['layers'].nil?)
-   file "/tmp/wtf.opsworks" do
-    content <<-EOH
-      #{node['opsworks']['layers']}
-      EOH
-  end
-else
-  instances = node['opsworks']['layers']['elasticsearch']['instances']
-  hosts = instances.map{ |name, attrs| attrs['private_ip'] }
-  
-  template "elasticsearch.yml" do
-    path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
-    source "elasticsearch.yml.erb"
-    owner node['elasticsearch']['user']
-    group node['elasticsearch']['user']
-    mode '0755'
-    variables(
-        hosts: hosts
-    )
-  end
+## This block is broken, opsworks seems to have lost 'layers', and 'opsworks' attribute blocks.
+##    Since we dont actually use clustering, we can use a standalone host.
+##    This still needs to probably eventually be fixed..
+# instances = node['opsworks']['layers']['elasticsearch']['instances']
+# hosts = instances.map{ |name, attrs| attrs['private_ip'] }
+#
+# template "elasticsearch.yml" do
+#   path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
+#   source "elasticsearch.yml.erb"
+#   owner node['elasticsearch']['user']
+#   group node['elasticsearch']['user']
+#   mode '0755'
+#   variables(
+#       hosts: hosts
+#   )
+# end
+
+template "elasticsearch.yml" do
+  path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
+  source "elasticsearch.yml.erb"
+  owner node['elasticsearch']['user']
+  group node['elasticsearch']['user']
+  mode '0755'
+  variables(
+      hosts: node['instance']['private_ip']
+  )
 end
 
 # Monitoring by Monit
