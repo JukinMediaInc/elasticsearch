@@ -38,7 +38,7 @@ end
 ## This block is broken, opsworks seems to have lost 'layers', and 'opsworks' attribute blocks.
 ##    Since we dont actually use clustering, we can use a standalone host.
 ##    This still needs to probably eventually be fixed..
-elasticsearch_layer_data = search("aws_opsworks_layer": "shortname:elasticsearch").first
+elasticsearch_layer_data = search("aws_opsworks_layer", "shortname:elasticsearch").first
 elasticsearch_layer_id = elasticsearch_layer_data['layer_id']
 hosts = Array.new
 search("aws_opsworks_instance").each do |instance|
