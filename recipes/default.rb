@@ -38,19 +38,15 @@ end
 ## This block is broken, opsworks seems to have lost 'layers', and 'opsworks' attribute blocks.
 ##    Since we dont actually use clustering, we can use a standalone host.
 ##    This still needs to probably eventually be fixed..
-# instances = node['opsworks']['layers']['elasticsearch']['instances']
-# hosts = instances.map{ |name, attrs| attrs['private_ip'] }
-#
-# template "elasticsearch.yml" do
-#   path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
-#   source "elasticsearch.yml.erb"
-#   owner node['elasticsearch']['user']
-#   group node['elasticsearch']['user']
-#   mode '0755'
-#   variables(
-#       hosts: hosts
-#   )
-# end
+elasticsearch_layer_data = search("aws_opsworks_layer": "shortname:elasticsearch").first
+elasticsearch_layer_id = elasticsearch_layer_data['layer_id']
+hosts = Array.new
+search("aws_opsworks_instance").each do |instance|
+  if (instance['layer_ids'].include? elasticsearch_layer_id)
+    hosts.push(instance['private_ip'])
+end
+instances = node['opsworks']['layers']['elasticsearch']['instances']
+hosts = instances.map{ |name, attrs| attrs['private_ip'] }
 
 template "elasticsearch.yml" do
   path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
@@ -59,9 +55,20 @@ template "elasticsearch.yml" do
   group node['elasticsearch']['user']
   mode '0755'
   variables(
-      hosts: node['opsworks']['instance']['private_ip']
+      hosts: hosts
   )
 end
+
+#template "elasticsearch.yml" do
+#  path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
+#  source "elasticsearch.yml.erb"
+#  owner node['elasticsearch']['user']
+#  group node['elasticsearch']['user']
+#  mode '0755'
+#  variables(
+#      hosts: node['opsworks']['instance']['private_ip']
+#  )
+#end
 
 # Monitoring by Monit
 template "elasticsearch.monitrc" do
