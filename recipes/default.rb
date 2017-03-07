@@ -42,11 +42,9 @@ elasticsearch_layer_data = search("aws_opsworks_layer": "shortname:elasticsearch
 elasticsearch_layer_id = elasticsearch_layer_data['layer_id']
 hosts = Array.new
 search("aws_opsworks_instance").each do |instance|
-  if (instance['layer_ids'].include? elasticsearch_layer_id)
-    hosts.push(instance['private_ip'])
+  next unless (instance['layer_ids'].include? elasticsearch_layer_id)
+  hosts.push(instance['private_ip'])
 end
-instances = node['opsworks']['layers']['elasticsearch']['instances']
-hosts = instances.map{ |name, attrs| attrs['private_ip'] }
 
 template "elasticsearch.yml" do
   path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
