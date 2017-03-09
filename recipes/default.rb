@@ -34,10 +34,6 @@ execute "reload-monit" do
   action :nothing
 end
 
-# Configration
-## This block is broken, opsworks seems to have lost 'layers', and 'opsworks' attribute blocks.
-##    Since we dont actually use clustering, we can use a standalone host.
-##    This still needs to probably eventually be fixed..
 elasticsearch_layer_data = search("aws_opsworks_layer", "shortname:elasticsearch").first
 elasticsearch_layer_id = elasticsearch_layer_data['layer_id']
 hosts = Array.new
@@ -56,17 +52,6 @@ template "elasticsearch.yml" do
       hosts: hosts
   )
 end
-
-#template "elasticsearch.yml" do
-#  path   "#{node['elasticsearch']['path']['conf']}/elasticsearch.yml"
-#  source "elasticsearch.yml.erb"
-#  owner node['elasticsearch']['user']
-#  group node['elasticsearch']['user']
-#  mode '0755'
-#  variables(
-#      hosts: node['opsworks']['instance']['private_ip']
-#  )
-#end
 
 # Monitoring by Monit
 template "elasticsearch.monitrc" do
